@@ -42,9 +42,26 @@ app.listen(port, () => {
 });
 
 // GET/ users
-app.get("/users", async (req, res)=> {
+app.get("/users", async (req, res) => {
   const dbres = await client.query('select * from users')
-  res.json(dbres.rows)
+  res.json(dbres.rows);
 })
 
-// GET/ 
+// GET/ single user :id
+app.get<{ id: string }, {}, {}>("/users/:id", async (req, res) => {
+  const user_id = parseInt(req.params.id);
+  const dbres = await client.query(
+    "select * from users where user_id = $1",
+    [user_id]
+  );
+})
+
+// GET all skills for user:id
+app.get<{ id: string }, {}, {}>("/users/:id/skills", async (req, res) => {
+  const user_id = parseInt(req.params.id);
+  const dbres = await client.query(
+    "select * from skills join skill_assignments on skills.id = skill_assignments.skill_id" +
+    "join users on users.id = skill_assignments.mentor_id where users.id = $1",
+    [user_id] 
+  )
+})
