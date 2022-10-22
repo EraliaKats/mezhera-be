@@ -26,12 +26,6 @@ app.use(cors()) //add CORS support to each following route handler
 const client = new Client(dbConfig);
 client.connect();
 
-app.get("/", async (req, res) => {
-  const dbres = await client.query('select * from users');
-  res.json(dbres.rows);
-});
-
-
 //Start the server on the given port
 const port = process.env.PORT;
 if (!port) {
@@ -41,27 +35,43 @@ app.listen(port, () => {
   console.log(`Server is up and running on port ${port}`);
 });
 
+app.get("/", async (req, res) => {
+  res.send("Go to /users")
+});
+
 // GET/ users
 app.get("/users", async (req, res) => {
-  const dbres = await client.query('select * from users')
-  res.json(dbres.rows);
+  try {
+    const dbres = await client.query('select * from users')
+    res.status(200).json(dbres.rows);
+  } catch (error) {
+    res.status(500).send({ error: error, stack: error.stack });
+  }
 })
 
 // GET/ single user :id
 app.get<{ id: string }, {}, {}>("/users/:id", async (req, res) => {
-  const user_id = parseInt(req.params.id);
-  const dbres = await client.query(
-    "select * from users where user_id = $1",
-    [user_id]
-  );
+  try {
+    const user_id = parseInt(req.params.id);
+    const dbres = await client.query(
+      "select * from users where user_id = $1",
+      [user_id])
+    res.status(200).json(dbres.rows);
+  } catch (error) {
+    res.status(500).send({ error: error, stack: error.stack });
+  }
 })
 
 // GET all skills for user:id
 app.get<{ id: string }, {}, {}>("/users/:id/skills", async (req, res) => {
+  try {
   const user_id = parseInt(req.params.id);
   const dbres = await client.query(
     "select * from skills join skill_assignments on skills.id = skill_assignments.skill_id" +
     "join users on users.id = skill_assignments.mentor_id where users.id = $1",
-    [user_id] 
-  )
+    [user_id])
+    res.status(200).json(dbres.rows)
+  } catch (error) {
+    res.status(500).send({ error: error, stack: error.stack })
+  }
 })
