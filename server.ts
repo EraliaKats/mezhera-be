@@ -27,7 +27,7 @@ const client = new Client(dbConfig);
 client.connect();
 
 app.get("/", async (req, res) => {
-  const dbres = await client.query('select * from categories');
+  const dbres = await client.query('select * from users');
   res.json(dbres.rows);
 });
 
@@ -40,3 +40,11 @@ if (!port) {
 app.listen(port, () => {
   console.log(`Server is up and running on port ${port}`);
 });
+
+// GET/ users
+app.get("/users", async (req, res)=> {
+  const dbres = await client.query('select * from users')
+  res.json(dbres.rows)
+})
+
+// GET/ 
