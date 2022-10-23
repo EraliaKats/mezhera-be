@@ -54,7 +54,7 @@ app.get<{ id: string }, {}, {}>("/users/:id", async (req, res) => {
   try {
     const user_id = parseInt(req.params.id);
     const dbres = await client.query(
-      "select * from users where user_id = $1",
+      "select * from users where users.id = $1",
       [user_id])
     res.status(200).json(dbres.rows);
   } catch (error) {
@@ -62,14 +62,38 @@ app.get<{ id: string }, {}, {}>("/users/:id", async (req, res) => {
   }
 })
 
-// GET all skills for user:id
+// GET all skills for users:id
 app.get<{ id: string }, {}, {}>("/users/:id/skills", async (req, res) => {
   try {
   const user_id = parseInt(req.params.id);
   const dbres = await client.query(
-    "select * from skills join skill_assignments on skills.id = skill_assignments.skill_id" +
+    "select * from skills join skill_assignments on skills.id = skill_assignments.skill_id " +
     "join users on users.id = skill_assignments.mentor_id where users.id = $1",
     [user_id])
+    res.status(200).json(dbres.rows)
+  } catch (error) {
+    res.status(500).send({ error: error, stack: error.stack })
+  }
+})
+
+//GET profile_desc for user:id
+app.get<{ id: string }, {}, {}>("/users/:id/profile", async (req, res) => {
+  try {
+  const user_id = parseInt(req.params.id);
+  const dbres = await client.query(
+  "select * from mentor_profile join users on users.id = mentor_profile.mentor_id " +
+  "join skill_assignments on users.id = skill_assignments.mentor_id where users.id = $1",
+  [user_id])
+
+  const dbres2 = await client.query(
+  "select skill_desc from skills join skill_assignments on skills.id = skill_assignments.skill_id " +
+  "join users on users.id = skill_assignments.mentor_id where users.id = $1",
+  [user_id]
+  )
+
+  let mentorSkills:any = []  //change any type
+  dbres2.rows.map((skill)=>mentorSkills.push(skill))
+  dbres.rows.push(mentorSkills)
     res.status(200).json(dbres.rows)
   } catch (error) {
     res.status(500).send({ error: error, stack: error.stack })

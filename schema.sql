@@ -8,18 +8,15 @@ create table users (
    
    create table skills (
     id int primary key,
-    description varchar(300) unique not null
+    skill_desc varchar(300) unique not null
    );
-     
-    create table chatlog (
+
+   create table mentor_profile (
     id int primary key,
-    sender_id int not null,
-    receiver_id int not null,
-    message varchar not null,
-    datetime timestamp,   
-    foreign key (sender_id) references users(id),
-    foreign key (receiver_id) references users(id)
-  );
+    mentor_id int,
+    profile_desc varchar not null,
+    foreign key (mentor_id) references users(id)
+   )
 
   create table skill_assignments (
     id int primary key,
