@@ -81,8 +81,7 @@ app.get<{ id: string }, {}, {}>("/users/:id/profile", async (req, res) => {
   try {
   const user_id = parseInt(req.params.id);
   const dbres = await client.query(
-  "select * from mentor_profile join users on users.id = mentor_profile.mentor_id " +
-  "join skill_assignments on users.id = skill_assignments.mentor_id where users.id = $1",
+  "select * from mentor_profile join users on users.id = mentor_profile.mentor_id where users.id = $1",
   [user_id])
 
   const dbres2 = await client.query(
