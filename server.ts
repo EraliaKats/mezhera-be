@@ -85,7 +85,7 @@ app.get<{ id: string }, {}, {}>("/users/:id/profile", async (req, res) => {
   [user_id])
 
   const dbres2 = await client.query(
-  "select skill_desc from skills join skill_assignments on skills.id = skill_assignments.skill_id " +
+  "select skills.id, skill_desc from skills join skill_assignments on skills.id = skill_assignments.skill_id " +
   "join users on users.id = skill_assignments.mentor_id where users.id = $1",
   [user_id]
   )
